@@ -9,12 +9,14 @@ export class RecipeService {
 
   private recipes: Recipe[] = [
     new Recipe(
+      1,
       'Schnitzel',
       'This is a schnitzel',
       'https://upload.wikimedia.org/wikipedia/commons/7/72/Schnitzel.JPG',
       [new Ingredient('Meat', 1), new Ingredient('French Fries', 20)]
     ),
     new Recipe(
+      2,
       'Big Burger',
       'This is a big burger',
       'https://upload.wikimedia.org/wikipedia/commons/b/be/Burger_King_Angus_Bacon_%26_Cheese_Steak_Burger.jpg',
@@ -34,5 +36,9 @@ export class RecipeService {
 
   addToShoppingList(ingredients: Ingredient[]) {
     this.shoppingListService.addIngredients(ingredients);
+  }
+
+  getRecipe(id: number) {
+    return this.recipes.find((recipe) => recipe.id === id);
   }
 }
