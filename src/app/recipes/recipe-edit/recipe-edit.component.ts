@@ -45,7 +45,17 @@ export class RecipeEditComponent implements OnInit {
     return (this.editForm.get('ingredients') as FormArray).controls;
   }
 
-  //*ngFor="let ingredientCtrl of controls; let i = index"
+  onAddIngredient() {
+    (this.editForm.get('ingredients') as FormArray).push(
+      new FormGroup({
+        name: new FormControl(null, Validators.required),
+        amount: new FormControl(null, [
+          Validators.required,
+          Validators.pattern(/^[1-9]+[0-9]*$/),
+        ]),
+      })
+    );
+  }
 
   private initForm() {
     const editRecipe = this.recipeService.getRecipe(this.id);
@@ -89,7 +99,7 @@ export class RecipeEditComponent implements OnInit {
         this.editForm.value.name,
         this.editForm.value.description,
         this.editForm.value.imagePath,
-        []
+        this.editForm.value.ingredients || []
       )
     );
   }
@@ -101,7 +111,7 @@ export class RecipeEditComponent implements OnInit {
         this.editForm.value.name,
         this.editForm.value.description,
         this.editForm.value.imagePath,
-        []
+        this.editForm.value.ingredients || []
       )
     );
   }
