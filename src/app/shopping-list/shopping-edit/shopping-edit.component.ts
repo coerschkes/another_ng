@@ -51,6 +51,7 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
         new Ingredient(this.addForm.value.name, this.addForm.value.amount)
       );
     }
+    this.resetForm();
   }
 
   resetForm() {
