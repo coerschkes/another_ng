@@ -47,4 +47,9 @@ export class RecipeService {
     this.recipes[recipeIndex] = recipe;
     this.recipeChanged.next(this.recipes.slice());
   }
+
+  addRecipe(recipe: Recipe) {
+    this.recipes.push(recipe);
+    this.recipeChanged.next(this.recipes.slice());
+  }
 }

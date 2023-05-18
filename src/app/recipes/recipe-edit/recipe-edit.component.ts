@@ -25,21 +25,42 @@ export class RecipeEditComponent implements OnInit {
       this.id = +params['id'];
       this.editMode = params['id'] != null;
     });
-    this.editRecipe = this.recipeService.getRecipe(this.id);
+
     this.editForm = new FormGroup({
-      name: new FormControl(this.editRecipe.name, Validators.required),
-      imagePath: new FormControl(
-        this.editRecipe.imagePath,
-        Validators.required
-      ),
-      description: new FormControl(
-        this.editRecipe.description,
-        Validators.required
-      ),
+      name: new FormControl(null, Validators.required),
+      imagePath: new FormControl(null, Validators.required),
+      description: new FormControl(null, Validators.required),
     });
+
+    if (this.editMode) {
+      this.populateForm();
+    }
   }
 
   onSubmit() {
+    if (this.editMode) {
+      this.updateRecipe();
+    } else {
+      this.addRecipe();
+    }
+    this.editForm.reset();
+    this.editMode = false;
+  }
+
+  private addRecipe() {
+    const nextId = this.recipeService.getRecipes().length + 1;
+    this.recipeService.addRecipe(
+      new Recipe(
+        nextId,
+        this.editForm.value.name,
+        this.editForm.value.description,
+        this.editForm.value.imagePath,
+        []
+      )
+    );
+  }
+
+  private updateRecipe() {
     this.recipeService.updateRecipe(
       new Recipe(
         this.id,
@@ -49,5 +70,14 @@ export class RecipeEditComponent implements OnInit {
         this.editRecipe.ingredients
       )
     );
+  }
+
+  private populateForm() {
+    this.editRecipe = this.recipeService.getRecipe(this.id);
+    this.editForm.setValue({
+      name: this.editRecipe.name,
+      imagePath: this.editRecipe.imagePath,
+      description: this.editRecipe.description,
+    });
   }
 }
