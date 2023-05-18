@@ -34,15 +34,11 @@
             class="btn btn-danger"
             type="button"
             (click)="onDelete()"
-            [disabled]="!editMode"
+            *ngIf="editMode"
           >
             Delete
           </button>
-          <button
-            class="btn btn-primary"
-            type="button"
-            (click)="resetForm()"
-          >
+          <button class="btn btn-primary" type="button" (click)="resetForm()">
             Clear
           </button>
         </div>
