@@ -42,13 +42,16 @@ export class RecipeService {
     return this.recipes.find((recipe) => recipe.id === id);
   }
 
-  updateRecipe(recipe: Recipe) {
-    const recipeIndex = this.recipes.findIndex((r) => r.id === recipe.id);
+  updateRecipe(id: number, recipe: Recipe) {
+    const recipeIndex = this.recipes.findIndex((r) => r.id === id);
+    recipe.id = id;
     this.recipes[recipeIndex] = recipe;
     this.recipeChanged.next(this.recipes.slice());
   }
 
   addRecipe(recipe: Recipe) {
+    const nextId = this.getRecipes().length + 1;
+    recipe.id = nextId;
     this.recipes.push(recipe);
     this.recipeChanged.next(this.recipes.slice());
   }
