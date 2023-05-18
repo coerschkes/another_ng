@@ -6,6 +6,7 @@ import { Recipe } from './recipe.model';
 
 @Injectable()
 export class RecipeService {
+  recipeChanged = new Subject<Recipe[]>();
   private recipes: Recipe[] = [
     new Recipe(
       1,
@@ -39,5 +40,11 @@ export class RecipeService {
 
   getRecipe(id: number) {
     return this.recipes.find((recipe) => recipe.id === id);
+  }
+
+  updateRecipe(recipe: Recipe) {
+    const recipeIndex = this.recipes.findIndex((r) => r.id === recipe.id);
+    this.recipes[recipeIndex] = recipe;
+    this.recipeChanged.next(this.recipes.slice());
   }
 }
