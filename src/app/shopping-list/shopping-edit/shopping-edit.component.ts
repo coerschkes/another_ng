@@ -16,7 +16,7 @@ export class ShoppingEditComponent implements OnInit {
   ngOnInit(): void {
     this.addForm = new FormGroup({
       name: new FormControl(null, Validators.required),
-      amount: new FormControl(null, Validators.required),
+      amount: new FormControl(null, [Validators.required, Validators.min(1)]),
     });
   }
 
