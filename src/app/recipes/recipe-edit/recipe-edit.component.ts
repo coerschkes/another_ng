@@ -36,6 +36,11 @@ export class RecipeEditComponent implements OnInit {
     this.resetForm();
   }
 
+  resetForm() {
+    this.editForm.reset();
+    this.editMode = false;
+  }
+
   private initForm() {
     this.editForm = new FormGroup({
       name: new FormControl(null, Validators.required),
@@ -80,10 +85,5 @@ export class RecipeEditComponent implements OnInit {
         []
       )
     );
-  }
-
-  private resetForm() {
-    this.editForm.reset();
-    this.editMode = false;
   }
 }
