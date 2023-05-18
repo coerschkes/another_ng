@@ -26,6 +26,19 @@ export class RecipeEditComponent implements OnInit {
       this.editMode = params['id'] != null;
     });
 
+    this.initForm();
+  }
+
+  onSubmit() {
+    if (this.editMode) {
+      this.updateRecipe();
+    } else {
+      this.addRecipe();
+    }
+    this.resetForm();
+  }
+
+  private initForm() {
     this.editForm = new FormGroup({
       name: new FormControl(null, Validators.required),
       imagePath: new FormControl(null, Validators.required),
@@ -37,14 +50,13 @@ export class RecipeEditComponent implements OnInit {
     }
   }
 
-  onSubmit() {
-    if (this.editMode) {
-      this.updateRecipe();
-    } else {
-      this.addRecipe();
-    }
-    this.editForm.reset();
-    this.editMode = false;
+  private populateForm() {
+    this.editRecipe = this.recipeService.getRecipe(this.id);
+    this.editForm.setValue({
+      name: this.editRecipe.name,
+      imagePath: this.editRecipe.imagePath,
+      description: this.editRecipe.description,
+    });
   }
 
   private addRecipe() {
@@ -72,12 +84,8 @@ export class RecipeEditComponent implements OnInit {
     );
   }
 
-  private populateForm() {
-    this.editRecipe = this.recipeService.getRecipe(this.id);
-    this.editForm.setValue({
-      name: this.editRecipe.name,
-      imagePath: this.editRecipe.imagePath,
-      description: this.editRecipe.description,
-    });
+  private resetForm() {
+    this.editForm.reset();
+    this.editMode = false;
   }
 }
