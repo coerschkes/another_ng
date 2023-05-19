@@ -1,7 +1,8 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Subject, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
+import { User } from './user.model';
 
 const firebaseSignupUrl =
   'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCRXiOpzNHpEwzX5ltndxAVX9jwACvIFFc';
@@ -20,40 +21,51 @@ export interface AuthResponseData {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  userSubject = new Subject<User>();
+
   constructor(private http: HttpClient) {}
 
   signup(email: string, password: string) {
-    return this.pipeWithFirebaseErrorHandling(
-      this.http.post<AuthResponseData>(firebaseSignupUrl, {
+    return this.http
+      .post<AuthResponseData>(firebaseSignupUrl, {
         email: email,
         password: password,
         returnSecureToken: true,
       })
-    );
+      .pipe(catchError(this.handleError))
+      .pipe(tap(this.handleAuthentication.bind(this)));
   }
 
   login(email: string, password: string) {
-    return this.pipeWithFirebaseErrorHandling(
-      this.http.post<AuthResponseData>(firebaseLoginUrl, {
+    return this.http
+      .post<AuthResponseData>(firebaseLoginUrl, {
         email: email,
         password: password,
         returnSecureToken: true,
       })
-    );
+      .pipe(catchError(this.handleError))
+      .pipe(tap(this.handleAuthentication.bind(this)));
   }
 
-  private pipeWithFirebaseErrorHandling(
-    observable: Observable<AuthResponseData>
-  ): Observable<AuthResponseData> {
-    return observable.pipe(
-      catchError((errorRes) => {
-        if (!errorRes.error || !errorRes.error.error) {
-          return throwError(() => new Error('An unknown error occurred!'));
-        } else {
-          return throwError(() => new Error(this.mapFirebaseError(errorRes)));
-        }
-      })
+  private handleAuthentication(authResponseData: AuthResponseData) {
+    const expirationDate = new Date(
+      new Date().getTime() + +authResponseData.expiresIn * 1000
     );
+    const user = new User(
+      authResponseData.email,
+      authResponseData.localId,
+      authResponseData.idToken,
+      expirationDate
+    );
+    this.userSubject.next(user);
+  }
+
+  private handleError(errorRes: HttpErrorResponse) {
+    if (!errorRes.error || !errorRes.error.error) {
+      return throwError(() => new Error('An unknown error occurred!'));
+    } else {
+      return throwError(() => new Error(this.mapFirebaseError(errorRes)));
+    }
   }
 
   private mapFirebaseError(firebaseErrorResponse: HttpErrorResponse): string {
