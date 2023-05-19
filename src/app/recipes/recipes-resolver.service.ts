@@ -4,7 +4,7 @@ import { DataStorageService } from '../shared/data-storage.service';
 import { Recipe } from './recipe.model';
 import { RecipeService } from './recipe.service';
 
-export const RecipesResolverService: ResolveFn<Recipe[]> = () => {
+export const RecipesResolver: ResolveFn<Recipe[]> = () => {
   const recipes = inject(RecipeService).getRecipes();
   if (recipes.length > 0) {
     return recipes;
