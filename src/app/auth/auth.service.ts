@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 const firebaseSignupUrl =
@@ -23,42 +23,40 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   signup(email: string, password: string) {
-    return this.http
-      .post<AuthResponseData>(firebaseSignupUrl, {
+    return this.pipeWithFirebaseErrorHandling(
+      this.http.post<AuthResponseData>(firebaseSignupUrl, {
         email: email,
         password: password,
         returnSecureToken: true,
       })
-      .pipe(
-        catchError((errorRes) => {
-          if (!errorRes.error || !errorRes.error.error) {
-            return throwError(() => new Error('An unknown error occurred!'));
-          } else {
-            return throwError(() => new Error(this.mapFirebaseError(errorRes)));
-          }
-        })
-      );
+    );
   }
 
   login(email: string, password: string) {
-    return this.http
-      .post<AuthResponseData>(firebaseLoginUrl, {
+    return this.pipeWithFirebaseErrorHandling(
+      this.http.post<AuthResponseData>(firebaseLoginUrl, {
         email: email,
         password: password,
         returnSecureToken: true,
       })
-      .pipe(
-        catchError((errorRes) => {
-          if (!errorRes.error || !errorRes.error.error) {
-            return throwError(() => new Error('An unknown error occurred!'));
-          } else {
-            return throwError(() => new Error(this.mapFirebaseError(errorRes)));
-          }
-        })
-      );
+    );
   }
 
-  private mapFirebaseError(firebaseErrorResponse: any): string {
+  private pipeWithFirebaseErrorHandling(
+    observable: Observable<AuthResponseData>
+  ): Observable<AuthResponseData> {
+    return observable.pipe(
+      catchError((errorRes) => {
+        if (!errorRes.error || !errorRes.error.error) {
+          return throwError(() => new Error('An unknown error occurred!'));
+        } else {
+          return throwError(() => new Error(this.mapFirebaseError(errorRes)));
+        }
+      })
+    );
+  }
+
+  private mapFirebaseError(firebaseErrorResponse: HttpErrorResponse): string {
     switch (firebaseErrorResponse.error.error.message) {
       case 'EMAIL_EXISTS':
         return 'This email already exists!';
