@@ -3,16 +3,19 @@ import { Injectable } from '@angular/core';
 import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-const authServiceUrl =
+const firebaseSignupUrl =
   'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCRXiOpzNHpEwzX5ltndxAVX9jwACvIFFc';
+const firebaseLoginUrl =
+  'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyCRXiOpzNHpEwzX5ltndxAVX9jwACvIFFc';
 
-interface AuthResponseData {
+export interface AuthResponseData {
   kind: string;
   idToken: string;
   email: string;
   refreshToken: string;
   expiresIn: string;
   localId: string;
+  registered?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -21,7 +24,25 @@ export class AuthService {
 
   signup(email: string, password: string) {
     return this.http
-      .post<AuthResponseData>(authServiceUrl, {
+      .post<AuthResponseData>(firebaseSignupUrl, {
+        email: email,
+        password: password,
+        returnSecureToken: true,
+      })
+      .pipe(
+        catchError((errorRes) => {
+          if (!errorRes.error || !errorRes.error.error) {
+            return throwError(() => new Error('An unknown error occurred!'));
+          } else {
+            return throwError(() => new Error(this.mapFirebaseError(errorRes)));
+          }
+        })
+      );
+  }
+
+  login(email: string, password: string) {
+    return this.http
+      .post<AuthResponseData>(firebaseLoginUrl, {
         email: email,
         password: password,
         returnSecureToken: true,
