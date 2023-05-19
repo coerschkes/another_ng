@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { map, tap } from 'rxjs';
 import { Recipe } from '../recipes/recipe.model';
 import { RecipeService } from '../recipes/recipe.service';
-import { map } from 'rxjs';
 
 const firebaseBaseUrl =
   'https://udemy-angular-37826-default-rtdb.europe-west1.firebasedatabase.app/';
@@ -21,19 +21,19 @@ export class DataStorageService {
   }
 
   fetchData() {
-    return this.http
-      .get<Recipe[]>(firebaseBaseUrl + 'recipes.json')
-      .pipe(map((recipes) => {
+    return this.http.get<Recipe[]>(firebaseBaseUrl + 'recipes.json').pipe(
+      map((recipes) => {
         return recipes.map((recipe) => {
           return {
             ...recipe,
             ingredients: recipe.ingredients ? recipe.ingredients : [],
           };
         });
-      }))
-      .subscribe((response) => {
-        this.recipeService.setRecipes(response);
-        console.log(response);
-      });
+      }),
+      tap((recipes) => {
+        this.recipeService.setRecipes(recipes);
+        console.log(recipes);
+      })
+    );
   }
 }
