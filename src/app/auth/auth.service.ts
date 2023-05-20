@@ -76,7 +76,7 @@ export class AuthService {
         password: password,
         returnSecureToken: true,
       })
-      .pipe(catchError(this.handleError))
+      .pipe(catchError(this.handleError.bind(this)))
       .pipe(tap(this.handleAuthentication.bind(this)));
   }
 
