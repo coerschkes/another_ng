@@ -15,7 +15,6 @@ import { SharedModule } from './shared/shared.module';
     BrowserModule,
     HttpClientModule,
     AppRoutingModule,
-    AuthModule,
     SharedModule,
   ],
   providers: [
