@@ -3,12 +3,15 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 import { User } from './user.model';
 
 const firebaseSignupUrl =
-  'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCRXiOpzNHpEwzX5ltndxAVX9jwACvIFFc';
+  'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' +
+  environment.firebaseApiKey;
 const firebaseLoginUrl =
-  'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyCRXiOpzNHpEwzX5ltndxAVX9jwACvIFFc';
+  'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' +
+  environment.firebaseApiKey;
 
 export interface AuthResponseData {
   kind: string;
