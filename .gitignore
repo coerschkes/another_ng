@@ -42,3 +42,7 @@ testem.log
 Thumbs.db
 
 /src/environments
+
+.firebase*
+firebase.json
+firebase-debug.log
